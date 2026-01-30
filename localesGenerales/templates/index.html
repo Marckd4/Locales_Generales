@@ -2,6 +2,19 @@
 {% load static %}
 
 {% block content %}
+<div class="d-flex justify-content-between mb-3">
+    
+    <div>
+        <a href="{% url 'importar_excel' %}" class="btn btn-primary btn-sm">
+            📥 Importar Excel
+        </a>
+        <a href="{% url 'exportar_excel' %}" class="btn btn-success btn-sm">
+            📤 Exportar Excel
+        </a>
+    </div>
+</div>
+
+
 <div class="container-fluid mt-4">
     <div class="card shadow">
         <div class="card-header bg-dark text-white">

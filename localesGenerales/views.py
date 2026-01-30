@@ -94,3 +94,55 @@ def importar_excel(request):
         return redirect('index')
 
     return render(request, 'importar_excel.html')
+
+
+
+
+import openpyxl
+from django.http import HttpResponse
+from .models import Inventario
+
+def exportar_excel(request):
+    # Crear libro y hoja
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inventario"
+
+    # Cabeceras
+    columnas = [
+        'Ubicación',
+        'Cod EAN',
+        'Cod DUN',
+        'Cod Sistema',
+        'Descripción',
+        'Categoría',
+        'Conteo 01',
+        'Conteo 02',
+        'Diferencia',
+        'Fecha Creación',
+    ]
+    ws.append(columnas)
+
+    # Datos
+    for item in Inventario.objects.all().order_by('id'):
+        ws.append([
+            item.ubicacion,
+            item.cod_ean,
+            item.cod_dun,
+            item.cod_sistema,
+            item.descripcion,
+            item.categoria,
+            item.conteo_01,
+            item.conteo_02,
+            item.diferencia,
+            item.creado.strftime('%d-%m-%Y %H:%M'),
+        ])
+
+    # Respuesta HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=inventario.xlsx'
+
+    wb.save(response)
+    return response
