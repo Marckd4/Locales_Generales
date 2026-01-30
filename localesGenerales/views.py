@@ -71,7 +71,7 @@ def importar_excel(request):
 
         if not archivo.name.endswith('.xlsx'):
             messages.error(request, "El archivo debe ser .xlsx")
-            return redirect('localesGenerales:importar_excel')
+            return redirect('importar_excel')
 
         wb = openpyxl.load_workbook(archivo, data_only=True)
         hoja = wb.active
@@ -91,6 +91,6 @@ def importar_excel(request):
             )
 
         messages.success(request, "Excel importado correctamente")
-        return redirect('localesGenerales:index')
+        return redirect('index')
 
     return render(request, 'importar_excel.html')
