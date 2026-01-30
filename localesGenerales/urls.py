@@ -6,4 +6,6 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('formulario', views.formulario, name='formulario'),
+    path('actualizar-conteo/', views.actualizar_conteo, name='actualizar_conteo'),
+
 ]
