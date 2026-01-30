@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h5>Importar Inventario desde Excel</h5>
+        </div>
+
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Archivo Excel (.xlsx)</label>
+                    <input type="file" name="archivo" class="form-control" accept=".xlsx" required>
+                </div>
+
+                <button class="btn btn-success">📥 Importar</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">⬅ Volver</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
