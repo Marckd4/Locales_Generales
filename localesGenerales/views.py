@@ -59,11 +59,16 @@ def to_int(valor):
         return 0
     
     
-    
 import openpyxl
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Inventario
+
+def to_int(valor):
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return 0
 
 def importar_excel(request):
     if request.method == 'POST' and request.FILES.get('archivo'):
@@ -76,25 +81,29 @@ def importar_excel(request):
         wb = openpyxl.load_workbook(archivo, data_only=True)
         hoja = wb.active
 
-        for fila in hoja.iter_rows(min_row=2, values_only=True):
-            Inventario.objects.update_or_create(
-                cod_sistema=str(fila[3]).strip() if fila[3] else '',
-                defaults={
-                    'ubicacion': fila[0] or '',
-                    'cod_ean': fila[1] or '',
-                    'cod_dun': fila[2] or '',
-                    'descripcion': fila[4] or '',
-                    'categoria': fila[5] or '',
-                    'conteo_01': to_int(fila[6]),
-                    'conteo_02': to_int(fila[7]),
-                }
-            )
+        creados = 0
 
-        messages.success(request, "Excel importado correctamente")
+        for fila in hoja.iter_rows(min_row=2, values_only=True):
+            Inventario.objects.create(
+                ubicacion=str(fila[0]).strip() if fila[0] else '',
+                cod_ean=str(fila[1]).strip() if fila[1] else '',
+                cod_dun=str(fila[2]).strip() if fila[2] else '',
+                cod_sistema=str(fila[3]).strip() if fila[3] else '',
+                descripcion=str(fila[4]).strip() if fila[4] else '',
+                categoria=str(fila[5]).strip() if fila[5] else '',
+                conteo_01=to_int(fila[6]),
+                conteo_02=to_int(fila[7]),
+            )
+            creados += 1
+
+        messages.success(
+            request,
+            f"Excel importado correctamente. Registros creados: {creados}"
+        )
+
         return redirect('index')
 
     return render(request, 'importar_excel.html')
-
 
 
 
