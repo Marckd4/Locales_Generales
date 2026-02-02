@@ -146,3 +146,40 @@ def exportar_excel(request):
 
     wb.save(response)
     return response
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Inventario
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+
+
+def editar_inventario(request, pk):
+    item = get_object_or_404(Inventario, pk=pk)
+
+    if request.method == 'POST':
+        item.ubicacion = request.POST.get('ubicacion')
+        item.cod_ean = request.POST.get('cod_ean')
+        item.cod_dun = request.POST.get('cod_dun')
+        item.cod_sistema = request.POST.get('cod_sistema')
+        item.descripcion = request.POST.get('descripcion')
+        item.categoria = request.POST.get('categoria')
+        item.conteo_01 = int(request.POST.get('conteo_01') or 0)
+        item.conteo_02 = int(request.POST.get('conteo_02') or 0)
+        item.save()
+
+        return redirect('index')
+
+    return render(request, 'editar_inventario.html', {'item': item})
+
+
+def eliminar_inventario(request, pk):
+    item = get_object_or_404(Inventario, pk=pk)
+
+    if request.method == 'POST':
+        item.delete()
+        return redirect('index')
+
+    return render(request, 'confirmar_eliminar.html', {'item': item})

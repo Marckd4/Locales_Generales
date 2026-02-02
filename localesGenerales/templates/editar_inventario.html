@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">Editar Inventario</h5>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card-body row g-2">
+
+                <div class="col-md-4">
+                    <label>Ubicación</label>
+                    <input name="ubicacion" class="form-control" value="{{ item.ubicacion }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Cód EAN</label>
+                    <input name="cod_ean" class="form-control" value="{{ item.cod_ean }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Cód DUN</label>
+                    <input name="cod_dun" class="form-control" value="{{ item.cod_dun }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Sistema</label>
+                    <input name="cod_sistema" class="form-control" value="{{ item.cod_sistema }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Descripción</label>
+                    <input name="descripcion" class="form-control" value="{{ item.descripcion }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Categoría</label>
+                    <input name="categoria" class="form-control" value="{{ item.categoria }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label>Conteo 01</label>
+                    <input name="conteo_01" type="number" class="form-control" value="{{ item.conteo_01 }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label>Conteo 02</label>
+                    <input name="conteo_02" type="number" class="form-control" value="{{ item.conteo_02 }}">
+                </div>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <a href="{% url 'index' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+                <button class="btn btn-success">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -2,8 +2,10 @@
 {% load static %}
 
 {% block content %}
-<div class="d-flex justify-content-between mb-3">
-    
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Inventario Locales ChileanTrading</h5>
+
     <div>
         <a href="{% url 'importar_excel' %}" class="btn btn-primary btn-sm">
             📥 Importar Excel
@@ -14,17 +16,27 @@
     </div>
 </div>
 
+<div class="container-fluid">
 
-<div class="container-fluid mt-4">
     <div class="card shadow">
+
         <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">Inventario</h5>
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <input type="text"
+                           id="buscarUbicacion"
+                           class="form-control form-control-sm"
+                           placeholder="🔍 Buscar por Ubicación">
+                </div>
+            </div>
         </div>
 
         <div class="card-body">
+
             <table id="tablaInventario"
                    class="table table-striped table-bordered table-sm nowrap"
-                   style="width:100%">
+                   style="width:100%; table-layout: fixed;">
+
                 <thead class="table-dark">
                     <tr>
                         <th>Ubicación</th>
@@ -36,55 +48,106 @@
                         <th>Conteo 01</th>
                         <th>Conteo 02</th>
                         <th>Diferencia</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for item in inventario %}
                     <tr>
-                        <td>{{ item.ubicacion }}</td>
-                        <td>{{ item.cod_ean }}</td>
-                        <td>{{ item.cod_dun }}</td>
-                        <td>{{ item.cod_sistema }}</td>
-                        <td>{{ item.descripcion }}</td>
-                        <td>{{ item.categoria }}</td>
+                        <td class="fw-bold" title="{{ item.ubicacion }}">
+                            {{ item.ubicacion }}
+                        </td>
+                        <td title="{{ item.cod_ean }}">{{ item.cod_ean }}</td>
+                        <td title="{{ item.cod_dun }}">{{ item.cod_dun }}</td>
+                        <td title="{{ item.cod_sistema }}">{{ item.cod_sistema }}</td>
+                        <td title="{{ item.descripcion }}">{{ item.descripcion }}</td>
+                        <td title="{{ item.categoria }}">{{ item.categoria }}</td>
 
-                        <!-- CONTEO 01 -->
                         <td>
                             <input type="number"
                                    class="form-control form-control-sm conteo text-end"
                                    data-id="{{ item.id }}"
                                    data-campo="conteo_01"
-                                   value="{{ item.conteo_01 }}">
+                                   value="{{ item.conteo_01|default_if_none:0 }}">
                         </td>
 
-                        <!-- CONTEO 02 -->
                         <td>
                             <input type="number"
                                    class="form-control form-control-sm conteo text-end"
                                    data-id="{{ item.id }}"
                                    data-campo="conteo_02"
-                                   value="{{ item.conteo_02 }}">
+                                   value="{{ item.conteo_02|default_if_none:0 }}">
                         </td>
 
-                        <!-- DIFERENCIA -->
-                        <td class="text-end diferencia">
-                            {{ item.diferencia }}
+                        <td class="text-end diferencia fw-bold">
+                            {{ item.diferencia|default_if_none:0 }}
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{% url 'editar' item.id %}"
+                               class="btn btn-warning btn-sm">
+                                ✏️
+                            </a>
+                            <a href="{% url 'eliminar' item.id %}"
+                               class="btn btn-danger btn-sm">
+                                🗑
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
+
         </div>
     </div>
 </div>
 
-<!-- JS -->
+<!-- ================= CSS ================= -->
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/fixedcolumns/4.3.1/css/fixedColumns.bootstrap5.min.css">
+
+<style>
+/* 🔒 Control total de columnas y celdas */
+#tablaInventario {
+    table-layout: fixed;
+}
+
+/* Todo queda dentro de la celda */
+#tablaInventario th,
+#tablaInventario td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Inputs contenidos */
+#tablaInventario input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Botones compactos */
+#tablaInventario .btn {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+</style>
+
+<!-- ================= JS ================= -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.1/js/dataTables.fixedColumns.min.js"></script>
 
 <script>
 $(document).ready(function () {
@@ -94,28 +157,52 @@ $(document).ready(function () {
         scrollX: true,
         scrollCollapse: true,
         paging: true,
+
+        autoWidth: false,
+
+        fixedColumns: {
+            left: 1
+        },
+
+        columnDefs: [
+            { width: "140px", targets: 0 },
+            { width: "120px", targets: 1 },
+            { width: "120px", targets: 2 },
+            { width: "120px", targets: 3 },
+            { width: "220px", targets: 4 },
+            { width: "140px", targets: 5 },
+            { width: "110px", targets: 6 },
+            { width: "110px", targets: 7 },
+            { width: "110px", targets: 8 },
+            { width: "120px", targets: 9 }
+        ],
+
         pageLength: 25,
         lengthMenu: [10, 25, 50, 100],
+
         language: {
             url: "https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json"
         }
     });
 
-    // GUARDAR CAMBIOS EN CONTEOS
+    // 🔍 Buscar solo por Ubicación
+    $('#buscarUbicacion').on('keyup change', function () {
+        tabla.column(0).search(this.value).draw();
+    });
+
+    // 💾 Guardar conteos sin deformar tabla
     $(document).on('change', '.conteo', function () {
+
         let input = $(this);
-        let id = input.data('id');
-        let campo = input.data('campo');
-        let valor = input.val();
         let fila = input.closest('tr');
 
         $.ajax({
             url: "{% url 'actualizar_conteo' %}",
             method: "POST",
             data: {
-                id: id,
-                campo: campo,
-                valor: valor,
+                id: input.data('id'),
+                campo: input.data('campo'),
+                valor: input.val() || 0,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             success: function (data) {
@@ -126,4 +213,5 @@ $(document).ready(function () {
 
 });
 </script>
+
 {% endblock %}
